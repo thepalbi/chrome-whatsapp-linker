@@ -19,22 +19,17 @@ function createWhatsAppLink(number) {
   return `https://wa.me/${number}`;
 }
 
-function createMsg({ type, msg }) {
-  return {
-    type: type,
-    msg: msg
-  };
-}
-
 function handleClickContextMenuItemClick({ selectionText }, tabId) {
   // Clean selection text from spaces and hyphens
   const cleanedSelection = selectionText.replaceAll(" ", "").replaceAll("-", "");
   // Check if it's a valid phone number
   if (!(/^\+[1-9]{1}[0-9]{3,14}$/.test(cleanedSelection))) {
-    chrome.tabs.sendMessage(tabId, {
-      type: "error",
-      msg: "selected text is not valid phone number",
-      details: cleanedSelection
+    chrome.scripting.executeScript({
+      target: { tabId },
+      function: (sel) => {
+        alert("Not a valid phone number: " + sel);
+      },
+      args: [cleanedSelection]
     });
     return;
   }
